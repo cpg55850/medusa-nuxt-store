@@ -4,13 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  css: ['./app/assets/css/main.css'],
-  vite: {
-    plugins: [
-      tailwindcss(),
-    ],
-  },
-  modules: ['@nuxtjs/medusa', 'shadcn-nuxt'],
+  modules: ['@nuxtjs/medusa', 'shadcn-nuxt', '@nuxtjs/tailwindcss'],
   shadcn: {
     /**
      * Prefix for all the imported component
@@ -20,7 +14,7 @@ export default defineNuxtConfig({
      * Directory that the component lives in.
      * @default "./components/ui"
      */
-    componentDir: './components/ui'
+    componentDir: './app/components/ui'
   },
   medusa: {
     baseUrl: process.env.MEDUSA_API_URL,       // your Medusa backend
