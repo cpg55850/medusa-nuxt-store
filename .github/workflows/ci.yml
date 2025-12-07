@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
 
 jobs:
@@ -39,33 +39,38 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: "pnpm"
 
       # ---------------- BACKEND (Medusa) -----------------
       - name: Install Medusa dependencies
         working-directory: backend
-        run: npm install
+        run: pnpm install
 
       - name: Build Medusa backend
         working-directory: backend
-        run: npm run build || true
+        run: pnpm run build
 
-      # Optional: run tests if you want
       # - name: Run backend tests
       #   working-directory: backend
-      #   run: npm test
+      #   run: pnpm test
 
       # ---------------- FRONTEND (Nuxt) -----------------
       - name: Install Nuxt dependencies
         working-directory: frontend
-        run: npm install
+        run: pnpm install
 
-      - name: Build Nuxt 3 frontend
+      - name: Build Nuxt frontend
         working-directory: frontend
-        run: npm run build
+        run: pnpm run build
 
       # ---------------- DOCKER BUILD -----------------
       - name: Build Docker images
