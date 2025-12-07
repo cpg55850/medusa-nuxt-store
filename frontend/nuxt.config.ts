@@ -24,6 +24,6 @@ export default defineNuxtConfig({
   },
   medusa: {
     baseUrl: process.env.MEDUSA_URL || "http://localhost:9000",       // your Medusa backend
-    publishableKey: "pk_24b06abe723b01c5e25e7bc640fe5d455014a49cba382c57a8325175559656f4"
+    publishableKey: process.env.MEDUSA_PUBLISHABLE_KEY
   },
 } as any)
