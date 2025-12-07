@@ -50,28 +50,38 @@ jobs:
           node-version: 20
           cache: "pnpm"
 
-      # ---------------- BACKEND (Medusa) -----------------
-      - name: Install Medusa dependencies
+      # ---------------- BACKEND -----------------
+      - name: Cache backend deps
+        uses: actions/cache@v3
+        with:
+          path: backend/node_modules
+          key: backend-pnpm-${{ hashFiles('backend/pnpm-lock.yaml') }}
+          restore-keys: backend-pnpm-
+
+      - name: Install backend deps
         working-directory: backend
         run: pnpm install
 
-      - name: Build Medusa backend
+      - name: Build backend
         working-directory: backend
         run: pnpm run build
 
-      # - name: Run backend tests
-      #   working-directory: backend
-      #   run: pnpm test
+      # ---------------- FRONTEND -----------------
+      - name: Cache frontend deps
+        uses: actions/cache@v3
+        with:
+          path: frontend/node_modules
+          key: frontend-pnpm-${{ hashFiles('frontend/pnpm-lock.yaml') }}
+          restore-keys: frontend-pnpm-
 
-      # ---------------- FRONTEND (Nuxt) -----------------
-      - name: Install Nuxt dependencies
+      - name: Install frontend deps
         working-directory: frontend
         run: pnpm install
 
-      - name: Build Nuxt frontend
+      - name: Build frontend
         working-directory: frontend
         run: pnpm run build
-
+      
       # ---------------- DOCKER BUILD -----------------
       - name: Build Docker images
         run: docker compose build
