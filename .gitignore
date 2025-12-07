@@ -1,0 +1,29 @@
+# Node modules
+**/node_modules/
+
+# Env files
+.env
+*.env
+**/*.env
+
+# Nuxt
+**/.nuxt/
+**/.output/
+
+# Medusa build
+backend/dist/
+backend/.cache/
+
+# Logs
+*.log
+
+# Docker volumes
+docker/postgres-data/
+docker/redis-data/
+
+# Mac system files
+.DS_Store
+
+# Lockfiles (optional if using pnpm)
+frontend/package-lock.json
+backend/package-lock.json
