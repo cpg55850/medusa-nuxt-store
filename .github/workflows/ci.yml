@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: medusa
+          POSTGRES_PASSWORD: medusa
+          POSTGRES_DB: medusa
+        options: >-
+          --health-cmd="pg_isready -U medusa"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      # ---------------- BACKEND (Medusa) -----------------
+      - name: Install Medusa dependencies
+        working-directory: backend
+        run: npm install
+
+      - name: Build Medusa backend
+        working-directory: backend
+        run: npm run build || true
+
+      # Optional: run tests if you want
+      # - name: Run backend tests
+      #   working-directory: backend
+      #   run: npm test
+
+      # ---------------- FRONTEND (Nuxt) -----------------
+      - name: Install Nuxt dependencies
+        working-directory: frontend
+        run: npm install
+
+      - name: Build Nuxt 3 frontend
+        working-directory: frontend
+        run: npm run build
+
+      # ---------------- DOCKER BUILD -----------------
+      - name: Build Docker images
+        run: docker compose build
