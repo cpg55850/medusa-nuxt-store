@@ -59,11 +59,11 @@ jobs:
 
       - name: Install backend deps
         working-directory: backend
-        run: pnpm install
+        run: npm install
 
       - name: Build backend
         working-directory: backend
-        run: pnpm run build
+        run: npm run build
 
       # ---------------- FRONTEND -----------------
       - name: Cache frontend deps
