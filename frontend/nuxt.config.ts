@@ -23,7 +23,7 @@ export default defineNuxtConfig({
     componentDir: './components/ui'
   },
   medusa: {
-    baseUrl: process.env.MEDUSA_URL || "http://localhost:9000",       // your Medusa backend
+    baseUrl: process.env.MEDUSA_API_URL,       // your Medusa backend
     publishableKey: process.env.MEDUSA_PUBLISHABLE_KEY
   },
 } as any)
