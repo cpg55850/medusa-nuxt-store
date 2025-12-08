@@ -29,5 +29,10 @@ export default defineNuxtConfig({
         ".nuxt/components.d.ts"
       ]
     }
+  },
+  runtimeConfig: {
+    public: {
+      stripePublishableKey: process.env.NUXT_PUBLIC_STRIPE_KEY
+    }
   }
 } as any)

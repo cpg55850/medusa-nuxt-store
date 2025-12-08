@@ -1,5 +1,6 @@
 export function useCheckout() {
   const cartStore = useCartStore()
+  const client = useMedusaClient()
   const router = useRouter()
   const notificationStore = useNotificationStore()
 
@@ -55,6 +56,35 @@ export function useCheckout() {
     )
   }
 
+  const initiateCheckout = async () => {
+    await executeAsync(
+      async () => {
+        if (!cartStore.cart?.id) {
+          throw new Error('No cart found')
+        }
+
+        // Initialize payment session but do NOT complete the order yet
+        // The order should only complete after Stripe webhook confirms payment
+        const { cart } = await client.store.cart.retrieve(cartStore.cart.id)
+
+        if (!cart.payment_collection?.id) {
+          throw new Error('No payment collection found on cart')
+        }
+
+        // Just redirect to Stripe checkout
+        // The order completion will happen via webhook after payment
+        notificationStore.notify('success', 'Redirecting to payment...')
+        
+        // Redirect to payment page with cart ID
+        router.push(`/checkout/payment/${cartStore.cart.id}`)
+      },
+      {
+        loadingId: 'checkout',
+        errorContext: 'Failed to initiate checkout',
+      }
+    )
+  }
+
   const checkout = async () => {
     await executeAsync(
       async () => {
@@ -68,15 +98,15 @@ export function useCheckout() {
         }
       },
       {
-        loadingId: 'checkout',
+        loadingId: 'complete-checkout',
         errorContext: 'Checkout error',
       }
     )
   }
 
-
   return {
     addToCart,
+    initiateCheckout,
     checkout,
     isLoading,
     isAddingToCart,

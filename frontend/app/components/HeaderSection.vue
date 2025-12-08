@@ -3,6 +3,7 @@ const isCartOpen = ref(false)
 const cartStore = useCartStore()
 const userStore = useUserStore()
 const { logout, isLoading } = useUser()
+const { initiateCheckout, isLoading: isCheckoutLoading } = useCheckout()
 const router = useRouter()
 
 onMounted(async () => {
@@ -38,9 +39,9 @@ const removeFromCart = async (lineId: string) => {
   }
 }
 
-const proceedToCheckout = () => {
+const proceedToCheckout = async () => {
   isCartOpen.value = false
-  router.push('/checkout')
+  await initiateCheckout()
 }
 </script>
 
@@ -161,8 +162,8 @@ const proceedToCheckout = () => {
 
             <!-- Checkout Button -->
             <Button @click="proceedToCheckout" class="w-full bg-blue-600 hover:bg-blue-700 text-white"
-              :disabled="cartItems.length === 0">
-              Proceed to Checkout
+              :disabled="cartItems.length === 0 || isCheckoutLoading('checkout')">
+              {{ isCheckoutLoading('checkout') ? 'Processing...' : 'Proceed to Checkout' }}
             </Button>
             <Button @click="isCartOpen = false" variant="outline" class="w-full">
               Continue Shopping
