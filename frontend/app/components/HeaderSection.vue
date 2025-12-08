@@ -57,7 +57,9 @@ const proceedToCheckout = () => {
 
           <!-- User Menu -->
           <div v-if="userStore.isAuthenticated" class="flex items-center gap-4">
-            <span class="text-sm text-gray-600">{{ userStore.customer?.first_name }}</span>
+            <NuxtLink to="/account" class="text-sm text-gray-600 hover:text-gray-900 hover:underline">
+              {{ userStore.customer?.first_name }}
+            </NuxtLink>
             <button @click="logout" :disabled="isLoading('logout')" class="text-sm text-gray-600 hover:text-gray-900">
               {{ isLoading('logout') ? 'Logging out...' : 'Logout' }}
             </button>
