@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@nuxtjs/medusa', 'shadcn-nuxt', '@nuxtjs/tailwindcss'],
+  modules: ['@pinia/nuxt', '@nuxtjs/medusa', 'shadcn-nuxt', '@nuxtjs/tailwindcss'],
   shadcn: {
     /**
      * Prefix for all the imported component
@@ -20,4 +20,14 @@ export default defineNuxtConfig({
     baseUrl: process.env.MEDUSA_API_URL,       // your Medusa backend
     publishableKey: process.env.MEDUSA_PUBLISHABLE_KEY
   },
+  // Added this for control clicking custom components to work
+  typescript: {
+    tsConfig: {
+      include: [
+        "app/components/**/**.vue",
+        "app/**/**.vue",
+        ".nuxt/components.d.ts"
+      ]
+    }
+  }
 } as any)

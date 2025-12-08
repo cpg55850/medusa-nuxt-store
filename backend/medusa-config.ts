@@ -3,6 +3,7 @@ import { loadEnv, defineConfig } from '@medusajs/framework/utils'
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
 module.exports = defineConfig({
+  // Project configuration
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
     http: {
@@ -16,5 +17,23 @@ module.exports = defineConfig({
       ssl: false,
       sslmode: "disable",
     },
-  }
+  },
+
+  // Modules (placed outside projectConfig)
+  modules: [
+    {
+      resolve: "@medusajs/medusa/payment",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/medusa/payment-stripe", // Stripe is built-in
+            id: "stripe",
+            options: {
+              apiKey: process.env.STRIPE_API_KEY, // Secret key here
+            },
+          },
+        ],
+      },
+    },
+  ],
 })

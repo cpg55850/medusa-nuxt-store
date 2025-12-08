@@ -1,3 +1,6 @@
+# Trick for installing shadcn-vue components
+NPM_CONFIG_LEGACY_PEER_DEPS=true pnpm dlx shadcn-vue@latest add field
+
 # Nuxt Minimal Starter
 
 Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
