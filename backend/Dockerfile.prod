@@ -22,6 +22,9 @@ WORKDIR /app
 # Copy only the production build from builder
 COPY --from=builder /app/.medusa/server ./server
 
+# Copy .env into the image
+COPY .env .env   # <-- add this line
+
 # Set environment variables defaults (override with your own)
 ENV NODE_ENV=production
 ENV PORT=9000
