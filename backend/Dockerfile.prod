@@ -1,16 +1,17 @@
 # Stage 1 — Build the project
 FROM node:20-alpine AS builder
 
+# Set working directory
 WORKDIR /app
 
 # Install dependencies
 COPY package*.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
-# Copy all backend source files
+# Copy all source files
 COPY . .
 
-# Build Medusa (creates .medusa/server)
+# Build Medusa (compiles TS and builds admin)
 RUN npx medusa build
 
 # Stage 2 — Production runtime
@@ -18,22 +19,33 @@ FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Copy entire backend including src, config, and package.json/yarn.lock
-COPY --from=builder /app ./
+# Copy only the production build from builder
+COPY --from=builder /app/.medusa/server ./server
 
-# Install only production deps
-RUN yarn install --production --frozen-lockfile
-
-# Set NODE_ENV
+# Set environment variables defaults (override with your own)
 ENV NODE_ENV=production
-ENV DATABASE_URL=postgres://postgres:postgres@postgres:5432/medusa-store
-ENV REDIS_URL=redis://redis:6379
+ENV PORT=9000
 ENV MEDUSA_WORKER_MODE=server
 ENV DISABLE_MEDUSA_ADMIN=false
-ENV PORT=9000
 
+# Database & Redis (override in deployment)
+ENV DATABASE_URL=postgres://postgres:postgres@postgres:5432/medusa-store
+ENV REDIS_URL=redis://redis:6379
+ENV COOKIE_SECRET=supersecret
+ENV JWT_SECRET=supersecret
+ENV STORE_CORS=http://localhost:3000
+ENV ADMIN_CORS=http://localhost:9000
+ENV AUTH_CORS=http://localhost:3000,http://localhost:9000
+ENV MEDUSA_BACKEND_URL=http://localhost:9000
+
+# Expose port
 EXPOSE 9000
 
+# Set working directory to the compiled server
 WORKDIR /app/server
 
-CMD ["npm", "run", "start"]
+# Install production dependencies
+RUN yarn install --production --frozen-lockfile
+
+# Run migrations and start the app
+CMD ["sh", "-c", "yarn run predeploy && yarn run start"]
