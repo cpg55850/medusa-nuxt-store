@@ -31,6 +31,7 @@ services:
   medusa:
     build:
       context: ./backend
+      dockerfile: Dockerfile.dev
     container_name: medusa_backend
     restart: unless-stopped
     depends_on:
@@ -62,7 +63,6 @@ services:
     command: sh -c "npm install && npm run dev -- --host"
     environment:
       NODE_ENV: development
-      MEDUSA_API_URL: http://medusa:9000
     depends_on:
       - medusa
       - redis

@@ -43,13 +43,14 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
+      args:
+        NUXT_PUBLIC_MEDUSA_URL: http://medusa:9000
+        NUXT_PUBLIC_MEDUSA_KEY: pk_24b06abe723b01c5e25e7bc640fe5d455014a49cba382c57a8325175559656f4
+        NUXT_PUBLIC_STRIPE_KEY: pk_test_51SUFsAI0zzqkxaWNaVo712g31qRwbCaf1Bj3t7DJpR3uUq84Tc94Y9bfNrkQRcATGIBfE9T5ioU34MF1nxwtABvB00kUTpUC7B
     container_name: nuxt_frontend
     restart: unless-stopped
     ports:
       - "3000:3000"
-    environment:
-      NODE_ENV: production
-      MEDUSA_API_URL: http://medusa:9000
     depends_on:
       - medusa
     networks:

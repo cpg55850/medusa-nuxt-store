@@ -17,8 +17,8 @@ export default defineNuxtConfig({
     componentDir: './app/components/ui'
   },
   medusa: {
-    baseUrl: process.env.MEDUSA_API_URL,       // your Medusa backend
-    publishableKey: process.env.MEDUSA_PUBLISHABLE_KEY
+    baseUrl: process.env.NUXT_PUBLIC_MEDUSA_URL,
+    publishableKey: process.env.NUXT_PUBLIC_MEDUSA_KEY
   },
   // Added this for control clicking custom components to work
   typescript: {
@@ -32,7 +32,9 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      stripePublishableKey: process.env.NUXT_PUBLIC_STRIPE_KEY
+      stripePublishableKey: process.env.NUXT_PUBLIC_STRIPE_KEY,
+      baseUrl: process.env.NUXT_PUBLIC_MEDUSA_URL,
+      publishableKey: process.env.NUXT_PUBLIC_MEDUSA_KEY
     }
   }
 } as any)

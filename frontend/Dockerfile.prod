@@ -2,8 +2,18 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# --- Build args ---
+ARG NUXT_PUBLIC_MEDUSA_URL
+ARG NUXT_PUBLIC_MEDUSA_KEY
+ARG NUXT_PUBLIC_STRIPE_KEY
+
+# --- Make them available as env variables during build ---
+ENV NUXT_PUBLIC_MEDUSA_URL=$NUXT_PUBLIC_MEDUSA_URL
+ENV NUXT_PUBLIC_MEDUSA_KEY=$NUXT_PUBLIC_MEDUSA_KEY
+ENV NUXT_PUBLIC_STRIPE_KEY=$NUXT_PUBLIC_STRIPE_KEY
+
 COPY package*.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 COPY . .
 

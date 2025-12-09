@@ -1,0 +1,10 @@
+node_modules
+**/node_modules
+dist
+.env
+.git
+Dockerfile
+Dockerfile.prod
+README.md
+integration-tests
+

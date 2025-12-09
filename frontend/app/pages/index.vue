@@ -1,5 +1,9 @@
 <script setup lang="ts">
 const client = useMedusaClient()
+console.log("Hello!")
+// console.log(JSON.stringify(client))
+const { medusa: config } = useRuntimeConfig().public;
+console.log("Config:", config)
 const { products } = await client.store.product.list()
 const { addToCart, isAddingToCart } = useCheckout()
 const { notify } = useNotificationStore()

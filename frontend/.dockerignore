@@ -1,0 +1,13 @@
+node_modules
+**/node_modules
+.nitro
+.nuxt
+.output
+dist
+.env
+.git
+Dockerfile
+Dockerfile.prod
+README.md
+pnpm-lock.yaml
+
