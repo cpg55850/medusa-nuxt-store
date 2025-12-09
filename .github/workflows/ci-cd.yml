@@ -3,117 +3,44 @@ name: CI/CD
 on:
   push:
     branches: ["main"]
-  pull_request:
 
 jobs:
   build:
-    name: Build & Test
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:15
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_USER: medusa
-          POSTGRES_PASSWORD: medusa
-          POSTGRES_DB: medusa
-        options: >-
-          --health-cmd="pg_isready -U medusa"
-          --health-interval=5s
-          --health-timeout=5s
-          --health-retries=5
-
-      redis:
-        image: redis:7
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd="redis-cli ping"
-          --health-interval=5s
-          --health-timeout=5s
-          --health-retries=5
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      # Backend
-      - name: Cache backend deps
-        uses: actions/cache@v3
-        with:
-          path: backend/node_modules
-          key: backend-pnpm-${{ hashFiles('backend/pnpm-lock.yaml') }}
-          restore-keys: backend-pnpm-
-      - name: Install backend deps
-        working-directory: backend
-        run: npm install
-      - name: Build backend
-        working-directory: backend
-        run: npm run build
-
-      # Frontend
-      - name: Cache frontend deps
-        uses: actions/cache@v3
-        with:
-          path: frontend/node_modules
-          key: frontend-pnpm-${{ hashFiles('frontend/pnpm-lock.yaml') }}
-          restore-keys: frontend-pnpm-
-      - name: Install frontend deps
-        working-directory: frontend
-        run: pnpm install
-      - name: Build frontend
-        working-directory: frontend
-        run: pnpm run build
-
-      # Docker Build
-      - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/medusa-store:latest .
-
-  deploy:
-    name: Deploy to DigitalOcean
-    runs-on: ubuntu-latest
-    needs: build  # <-- ensures this runs only after 'build' succeeds
-
-    steps:
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to Docker Hub
+      - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Push Docker image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/medusa-store:latest
+      - name: Build Backend Image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/medusa-backend:latest ./backend
+          docker push ${{ secrets.DOCKER_USERNAME }}/medusa-backend:latest
 
-      - name: Deploy to DigitalOcean droplet
+      - name: Build Frontend Image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/nuxt-frontend:latest ./frontend
+          docker push ${{ secrets.DOCKER_USERNAME }}/nuxt-frontend:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: SSH Deploy
         uses: appleboy/ssh-action@v0.1.9
         with:
           host: ${{ secrets.DO_DROPLET_IP }}
           username: root
           key: ${{ secrets.DO_DROPLET_SSH_KEY }}
           script: |
-            docker stop nuxt_frontend || true
-            docker rm nuxt_frontend || true
-            docker pull ${{ secrets.DOCKER_USERNAME }}/medusa-store:latest
-            docker run -d \
-              --name nuxt_frontend \
-              -p 3000:3000 \
-              -e NUXT_PUBLIC_MEDUSA_URL=http://medusa:9000 \
-              -e NUXT_PUBLIC_MEDUSA_KEY=${{ secrets.NUXT_PUBLIC_MEDUSA_KEY }} \
-              -e NUXT_PUBLIC_STRIPE_KEY=${{ secrets.NUXT_PUBLIC_STRIPE_KEY }} \
-              -e STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }} \
-              ${{ secrets.DOCKER_USERNAME }}/medusa-store:latest
+            cd /root/deploy
+
+            docker compose pull
+            docker compose down
+            docker compose up -d
