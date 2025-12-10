@@ -19,7 +19,11 @@ jobs:
 
       - name: Build Backend Image
         run: |
-          docker build --no-cache -f ./backend/Dockerfile.prod -t ${{ secrets.DOCKER_USERNAME }}/medusa-backend:latest ./backend
+          docker build \
+           --no-cache \
+            --build-arg MEDUSA_BACKEND_URL=https://medusa-admin.charliegraham.dev \
+            -f ./backend/Dockerfile.prod \
+            -t ${{ secrets.DOCKER_USERNAME }}/medusa-backend:latest ./backend
           docker push ${{ secrets.DOCKER_USERNAME }}/medusa-backend:latest
 
       - name: Build Frontend Image
