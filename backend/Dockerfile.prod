@@ -21,6 +21,7 @@ WORKDIR /app
 
 # Copy only the production build from builder
 COPY --from=builder /app/.medusa/server ./server
+COPY --from=builder /app/.medusa/admin ./server/admin
 
 # Set environment variables defaults (override with your own)
 ENV NODE_ENV=production
