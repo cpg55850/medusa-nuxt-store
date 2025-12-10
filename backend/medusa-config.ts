@@ -48,6 +48,24 @@ module.exports = defineConfig({
     },
 
     {
+      resolve: "@medusajs/medusa/file",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/medusa/file-local",
+            id: "local",
+            options: {
+              // other options...
+              // backendUrl or equivalent option set to your prod URL
+              backend_url: process.env.MEDUSA_BACKEND_URL!,
+            },
+          },
+        ],
+      },
+    },
+
+
+    {
       resolve: "@medusajs/medusa/payment",
       options: {
         providers: [
