@@ -4,6 +4,10 @@ FROM node:20-alpine AS builder
 # Set working directory
 WORKDIR /app
 
+# Allow passing backend URL at build time
+ARG MEDUSA_BACKEND_URL
+ENV MEDUSA_BACKEND_URL=${MEDUSA_BACKEND_URL}
+
 # Install dependencies
 COPY package*.json yarn.lock ./
 RUN yarn install --frozen-lockfile
@@ -36,7 +40,8 @@ ENV JWT_SECRET=supersecret
 ENV STORE_CORS=http://localhost:3000
 ENV ADMIN_CORS=http://localhost:9000
 ENV AUTH_CORS=http://localhost:3000,http://localhost:9000
-ENV MEDUSA_BACKEND_URL=http://localhost:9000
+# Use the same backend URL passed at build
+ENV MEDUSA_BACKEND_URL=${MEDUSA_BACKEND_URL}
 
 # Expose port
 EXPOSE 9000
