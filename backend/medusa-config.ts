@@ -57,7 +57,7 @@ module.exports = defineConfig({
             options: {
               // other options...
               // backendUrl or equivalent option set to your prod URL
-              backend_url: process.env.MEDUSA_BACKEND_URL!,
+              backend_url: process.env.MEDUSA_BACKEND_URL! + '/static',
               upload_dir: "static",
             },
           },
