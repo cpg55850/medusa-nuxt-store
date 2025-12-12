@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { formatPrice } from '../lib/utils'
+
 const isCartOpen = ref(false)
 const cartStore = useCartStore()
 const userStore = useUserStore()
@@ -15,8 +17,13 @@ const cartItems = computed(() => cartStore.cart?.items || [])
 const cartItemCount = computed(() => cartItems.value.length)
 const cartTotal = computed(() => {
   return cartItems.value.reduce((total, item) => {
-    return total + (item.unit_price * item.quantity / 100)
+    return total + (item.unit_price * item.quantity)
   }, 0)
+})
+
+const getItemPrice = (item: any) => formatPrice({
+  variant: { calculated_price: { calculated_amount: item.unit_price } },
+  currencyFallback: cartStore.cart?.region?.currency_code,
 })
 
 const updateQuantity = async (lineId: string, quantity: number) => {
@@ -111,7 +118,7 @@ const proceedToCheckout = async () => {
           <div v-else class="space-y-4">
             <div v-for="item in cartItems" :key="item.id" class="flex gap-4 p-4 bg-gray-50 rounded-lg">
               <!-- Product Image -->
-              <div class="w-20 h-20 bg-gray-200 rounded-md flex-shrink-0 overflow-hidden">
+              <div class="w-20 h-20 bg-gray-200 rounded-md shrink-0 overflow-hidden">
                 <img v-if="item.thumbnail" :src="item.thumbnail" :alt="item.title" class="w-full h-full object-cover" />
                 <div v-else class="w-full h-full flex items-center justify-center">
                   <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,7 +131,8 @@ const proceedToCheckout = async () => {
               <!-- Product Details -->
               <div class="flex-1 min-w-0">
                 <h4 class="text-sm font-semibold text-gray-900 truncate">{{ item.title }}</h4>
-                <p class="text-sm text-gray-600 mt-1">${{ (item.unit_price / 100).toFixed(2) }}</p>
+                <p class="text-sm text-gray-600 mt-1">{{ getItemPrice(item).symbol || getItemPrice(item).currency }}{{
+                  getItemPrice(item).amount }}</p>
 
                 <!-- Quantity Controls -->
                 <div class="flex items-center gap-2 mt-2">

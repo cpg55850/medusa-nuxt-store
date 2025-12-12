@@ -1,20 +1,29 @@
 <script setup lang="ts">
+import { formatPrice } from '../../lib/utils'
+
 const route = useRoute();
 const client = useMedusaClient();
+const cartStore = useCartStore();
 const { addToCart, isAddingToCart } = useCheckout()
 const { notify } = useNotificationStore()
 
+await cartStore.getCart()
+const regionId = computed(() => cartStore.cart?.region_id)
+
 const { data, pending, error } = await useAsyncData(
-  () => client.store.product.retrieve(route.params.id as string),
-  { server: true }
+  () => client.store.product.retrieve(
+    route.params.id as string,
+    regionId.value ? { region_id: regionId.value } : undefined,
+  ),
+  { server: true },
 );
 
 const product = computed(() => data.value?.product);
 
-const price = computed(() => {
-  const amount = product.value?.variants?.[0]?.calculated_price?.calculated_amount;
-  return amount ? (amount / 100).toFixed(2) : "0.00";
-});
+const price = computed(() => formatPrice({
+  variant: product.value?.variants?.[0],
+  currencyFallback: cartStore.cart?.region?.currency_code,
+}))
 
 const handleAddToCart = async () => {
   const variantId = product.value?.variants?.[0]?.id
@@ -92,7 +101,7 @@ const handleAddToCart = async () => {
 
           <div>
             <p class="text-sm text-gray-500">Price</p>
-            <p class="text-4xl font-semibold text-gray-900">${{ price }}</p>
+            <p class="text-4xl font-semibold text-gray-900">{{ price.symbol || price.currency }}{{ price.amount }}</p>
           </div>
 
           <div v-if="product.options?.length" class="space-y-3">

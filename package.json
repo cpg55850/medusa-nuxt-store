@@ -1,0 +1,33 @@
+{
+  "name": "my-medusa-store",
+  "version": "1.0.0",
+  "description": "127.0.0.1 medusa",
+  "homepage": "https://github.com/cpg55850/medusa-nuxt-store#readme",
+  "bugs": {
+    "url": "https://github.com/cpg55850/medusa-nuxt-store/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cpg55850/medusa-nuxt-store.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm:dev:frontend\" \"npm:dev:backend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run start",
+
+    "build": "npm run build:frontend && npm run build:backend",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+
+    "start": "concurrently \"npm:start:frontend\" \"npm:start:backend\"",
+    "start:frontend": "cd frontend && npm run start",
+    "start:backend": "cd backend && npm run start"
+  },
+  "dependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
